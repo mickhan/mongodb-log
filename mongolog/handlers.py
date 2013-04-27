@@ -19,7 +19,8 @@ if sys.version_info[0] >= 3:
 class MongoFormatter(logging.Formatter):
     def format(self, record):
         """Format exception object as a string"""
-        data = record.__dict__.copy()
+        #data = record.__dict__.copy()
+        data = {}
 
         if record.args:
             msg = record.msg % record.args
@@ -27,11 +28,11 @@ class MongoFormatter(logging.Formatter):
             msg = record.msg
 
         data.update(
-            username=getpass.getuser(),
             time=datetime.now(),
-            host=gethostname(),
+            level=record.__dict__["levelname"],
             message=msg,
-            args=tuple(unicode(arg) for arg in record.args)
+            pathname=record.__dict__["pathname"],
+            lineno=record.__dict__["lineno"]
         )
         if 'exc_info' in data and data['exc_info']:
             data['exc_info'] = self.formatException(data['exc_info'])
